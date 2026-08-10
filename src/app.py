@@ -46,3 +46,5 @@ def process_referral(patient_id: str, specialty: str, diagnosis_code: str, urgen
     """Complete referral workflow"""
     specialists = recommend_specialists(specialty, "any", 4.5)
     return {"referral_id": f"REF-{datetime.now().strftime('%Y%m%d')}-{patient_id[:6]}", "status": "processed", "urgency": urgency, "workflow": [{"step": "Analysis", "ai": "#1"}, {"step": "Completeness", "ai": "#4"}, {"step": "Recommendation", "ai": "#2"}], "specialist": specialists[0] if specialists else None}
+
+app = mcp
