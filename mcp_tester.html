@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Horizon MCP Tester</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --ink: #102039;
+      --muted: #5a6880;
+      --line: #d8e0ee;
+      --accent: #0b6ef3;
+      --accent-2: #17a96b;
+      --danger: #c0392b;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 24px;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: radial-gradient(circle at 10% 0%, #ffffff 0%, #eef3ff 45%, var(--bg) 100%);
+      color: var(--ink);
+    }
+
+    .wrap {
+      max-width: 1050px;
+      margin: 0 auto;
+      display: grid;
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 4px 12px rgba(16, 32, 57, 0.06);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 26px;
+    }
+
+    .sub {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 1fr;
+    }
+
+    @media (min-width: 980px) {
+      .grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin: 0 0 6px;
+      font-weight: 600;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 11px 12px;
+      font-size: 14px;
+      color: var(--ink);
+      background: #fff;
+    }
+
+    textarea {
+      min-height: 220px;
+      resize: vertical;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      color: #fff;
+      background: var(--accent);
+    }
+
+    button.secondary { background: #5b6b84; }
+    button.success { background: var(--accent-2); }
+
+    .status {
+      margin-top: 8px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .ok { color: var(--accent-2); }
+    .err { color: var(--danger); }
+
+    .log {
+      white-space: pre-wrap;
+      max-height: 280px;
+      overflow: auto;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #fafcff;
+      font-size: 13px;
+      color: #26364f;
+    }
+
+    .pill {
+      display: inline-block;
+      border: 1px solid var(--line);
+      background: #f8fbff;
+      color: #33445f;
+      border-radius: 999px;
+      padding: 3px 9px;
+      font-size: 12px;
+      margin-right: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Horizon MCP Tester</h1>
+      <p class="sub">Free local UI to connect and test your deployed FastMCP server.</p>
+      <p class="sub">
+        <span class="pill">No paid ChatGPT/Claude needed</span>
+        <span class="pill">Direct MCP protocol calls</span>
+      </p>
+    </div>
+
+    <div class="card grid">
+      <div>
+        <label for="serverUrl">MCP Server URL</label>
+        <input id="serverUrl" value="https://urgent-maroon-parakeet.fastmcp.app/mcp" />
+      </div>
+      <div>
+        <label for="token">Bearer Token (from Horizon)</label>
+        <input id="token" type="password" placeholder="paste access token" />
+      </div>
+      <div class="row" style="grid-column: 1 / -1;">
+        <button id="connectBtn">Connect + Load Tools</button>
+        <button id="clearBtn" class="secondary" type="button">Clear Log</button>
+      </div>
+      <div id="connectionStatus" class="status" style="grid-column: 1 / -1;"></div>
+    </div>
+
+    <div class="card grid">
+      <div>
+        <label for="toolName">Tool</label>
+        <select id="toolName"></select>
+      </div>
+      <div>
+        <label for="toolArgs">Arguments (JSON object)</label>
+        <textarea id="toolArgs">{}</textarea>
+      </div>
+      <div class="row" style="grid-column: 1 / -1;">
+        <button id="callBtn" class="success">Call Tool</button>
+      </div>
+      <div>
+        <label for="toolResult">Tool Result</label>
+        <textarea id="toolResult" readonly></textarea>
+      </div>
+      <div>
+        <label>Debug Log</label>
+        <div id="log" class="log"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let rpcId = 1;
+    let sessionId = null;
+    let serverUrl = "";
+    let bearer = "";
+
+    const el = {
+      serverUrl: document.getElementById("serverUrl"),
+      token: document.getElementById("token"),
+      connectBtn: document.getElementById("connectBtn"),
+      clearBtn: document.getElementById("clearBtn"),
+      callBtn: document.getElementById("callBtn"),
+      status: document.getElementById("connectionStatus"),
+      toolName: document.getElementById("toolName"),
+      toolArgs: document.getElementById("toolArgs"),
+      toolResult: document.getElementById("toolResult"),
+      log: document.getElementById("log")
+    };
+
+    function appendLog(msg) {
+      const t = new Date().toLocaleTimeString();
+      el.log.textContent += `[${t}] ${msg}\n`;
+      el.log.scrollTop = el.log.scrollHeight;
+    }
+
+    function setStatus(message, ok) {
+      el.status.textContent = message;
+      el.status.className = `status ${ok ? "ok" : "err"}`;
+    }
+
+    function buildHeaders(withSession = true) {
+      const headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json, text/event-stream",
+        "Authorization": `Bearer ${bearer}`,
+        "mcp-protocol-version": "2025-06-18"
+      };
+      if (withSession && sessionId) {
+        headers["mcp-session-id"] = sessionId;
+      }
+      return headers;
+    }
+
+    async function rpc(method, params = {}, includeSession = true) {
+      const payload = {
+        jsonrpc: "2.0",
+        id: rpcId++,
+        method,
+        params
+      };
+
+      const res = await fetch(serverUrl, {
+        method: "POST",
+        headers: buildHeaders(includeSession),
+        body: JSON.stringify(payload)
+      });
+
+      const maybeSession = res.headers.get("mcp-session-id");
+      if (maybeSession) {
+        sessionId = maybeSession;
+      }
+
+      const text = await res.text();
+      let data = null;
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        data = { raw: text };
+      }
+
+      if (!res.ok || data.error) {
+        const msg = data.error ? JSON.stringify(data.error, null, 2) : JSON.stringify(data, null, 2);
+        throw new Error(`HTTP ${res.status} ${res.statusText}\n${msg}`);
+      }
+
+      return data;
+    }
+
+    async function sendInitializedNotification() {
+      const payload = {
+        jsonrpc: "2.0",
+        method: "notifications/initialized",
+        params: {}
+      };
+
+      await fetch(serverUrl, {
+        method: "POST",
+        headers: buildHeaders(true),
+        body: JSON.stringify(payload)
+      });
+    }
+
+    async function connectAndLoadTools() {
+      serverUrl = el.serverUrl.value.trim();
+      bearer = el.token.value.trim();
+      sessionId = null;
+
+      if (!serverUrl) {
+        setStatus("Please provide server URL.", false);
+        return;
+      }
+
+      if (!bearer) {
+        setStatus("Please provide bearer token.", false);
+        return;
+      }
+
+      try {
+        appendLog(`Connecting to ${serverUrl}`);
+
+        const initResult = await rpc(
+          "initialize",
+          {
+            protocolVersion: "2025-06-18",
+            capabilities: {},
+            clientInfo: { name: "Horizon MCP Tester", version: "1.0.0" }
+          },
+          false
+        );
+
+        appendLog(`Initialize OK. Session: ${sessionId || "(none)"}`);
+        appendLog(`Server protocol: ${initResult?.result?.protocolVersion || "unknown"}`);
+
+        await sendInitializedNotification();
+        appendLog("Sent notifications/initialized");
+
+        const toolsResp = await rpc("tools/list", {});
+        const tools = toolsResp?.result?.tools || [];
+
+        el.toolName.innerHTML = "";
+        for (const t of tools) {
+          const opt = document.createElement("option");
+          opt.value = t.name;
+          opt.textContent = t.name;
+          el.toolName.appendChild(opt);
+        }
+
+        if (tools.length === 0) {
+          setStatus("Connected, but no tools returned.", false);
+          appendLog("tools/list returned 0 tools.");
+        } else {
+          setStatus(`Connected. Loaded ${tools.length} tools.`, true);
+          appendLog(`Loaded tools: ${tools.map(t => t.name).join(", ")}`);
+          el.toolResult.value = JSON.stringify(toolsResp.result, null, 2);
+        }
+      } catch (err) {
+        setStatus("Connection failed. Check token/URL and try again.", false);
+        appendLog(`ERROR: ${err.message}`);
+      }
+    }
+
+    async function callTool() {
+      const name = el.toolName.value;
+      if (!name) {
+        setStatus("No tool selected.", false);
+        return;
+      }
+
+      let args = {};
+      try {
+        args = JSON.parse(el.toolArgs.value || "{}");
+      } catch {
+        setStatus("Arguments must be valid JSON.", false);
+        return;
+      }
+
+      try {
+        appendLog(`Calling tool: ${name}`);
+        const resp = await rpc("tools/call", { name, arguments: args });
+        el.toolResult.value = JSON.stringify(resp.result, null, 2);
+        setStatus(`Tool '${name}' executed successfully.`, true);
+        appendLog(`Tool '${name}' success.`);
+      } catch (err) {
+        setStatus(`Tool '${name}' failed.`, false);
+        appendLog(`ERROR: ${err.message}`);
+      }
+    }
+
+    el.connectBtn.addEventListener("click", connectAndLoadTools);
+    el.callBtn.addEventListener("click", callTool);
+    el.clearBtn.addEventListener("click", () => { el.log.textContent = ""; });
+  </script>
+</body>
+</html>
