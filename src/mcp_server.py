@@ -10,7 +10,7 @@ SPECIALISTS = [
     {"id": 3, "name": "Dr. Emily Rodriguez", "specialty": "Neurology", "network": "United", "rating": 4.7}
 ]
 
-@mcp.tool()
+@mcp.tool
 def extract_medical_codes(document_text: str, document_type: str = "clinical_note") -> Dict[str, Any]:
     """AI #1: Extract ICD-10, CPT codes from clinical documents"""
     return {
@@ -19,7 +19,7 @@ def extract_medical_codes(document_text: str, document_type: str = "clinical_not
         "extracted_at": datetime.now().isoformat()
     }
 
-@mcp.tool()
+@mcp.tool
 def recommend_specialists(specialty: str, insurance_network: str = "any", min_rating: float = 4.0) -> List[Dict[str, Any]]:
     """AI #2: AI-powered specialist recommendation"""
     results = []
@@ -29,7 +29,7 @@ def recommend_specialists(specialty: str, insurance_network: str = "any", min_ra
             results.append({**s, "match_score": score, "available_slots": ["2026-08-15 10:00"]})
     return sorted(results, key=lambda x: x["match_score"], reverse=True)[:3]
 
-@mcp.tool()
+@mcp.tool
 def summarize_patient_history(patient_id: str, include_medications: bool = True) -> Dict[str, Any]:
     """AI #3: Patient history summary with LLM"""
     return {
@@ -40,7 +40,7 @@ def summarize_patient_history(patient_id: str, include_medications: bool = True)
         "generated_at": datetime.now().isoformat()
     }
 
-@mcp.tool()
+@mcp.tool
 def check_document_completeness(required_documents: List[str], submitted_documents: List[str]) -> Dict[str, Any]:
     """AI #4: Detect missing documentation"""
     missing = [d for d in required_documents if d not in submitted_documents]
@@ -53,7 +53,7 @@ def check_document_completeness(required_documents: List[str], submitted_documen
         "checked_at": datetime.now().isoformat()
     }
 
-@mcp.tool()
+@mcp.tool
 def process_referral_workflow(patient_id: str, specialty: str, diagnosis_code: str, urgency: str = "routine") -> Dict[str, Any]:
     """Complete referral processing workflow"""
     specialists = recommend_specialists(specialty, "any", 4.5)
