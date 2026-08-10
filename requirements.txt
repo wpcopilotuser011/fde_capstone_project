@@ -1,4 +1,4 @@
-fastmcp>=4.0
+fastmcp==4.0.0b2
 pydantic==2.9.2
 pydantic-settings>=2.6.1
 python-dotenv>=1.1.0
