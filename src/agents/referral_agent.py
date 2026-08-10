@@ -6,7 +6,6 @@ from typing import TypedDict, Annotated, Sequence, List, Dict, Any
 from langraph.graph import Graph, StateGraph, END
 from langchain_core.messages import BaseMessage, HumanMessage, AIMessage
 from langchain_openai import ChatOpenAI
-from langchain_anthropic import ChatAnthropic
 import json
 import os
 from datetime import datetime
