@@ -1,0 +1,58 @@
+# Local Configuration Example
+# Copy this to config.local.yaml and update with your actual values
+# DO NOT commit config.local.yaml to git
+
+app:
+  name: "Intelligent Referral Management Platform"
+  version: "1.0.0"
+  environment: "development"
+  host: "0.0.0.0"
+  port: 8000
+
+ai:
+  # Replace with your actual model
+  llm_model: "gpt-4"  # or "claude-3-sonnet-20240229" or other model
+  api_key: "YOUR_API_KEY_HERE"  # Keep this secret!
+  temperature: 0.7
+  max_tokens: 2000
+  
+mcp:
+  enabled: true
+  servers:
+    - name: "document_processor"
+      type: "stdio"
+    - name: "specialist_recommender"
+      type: "stdio"
+    - name: "eligibility_checker"
+      type: "stdio"
+
+database:
+  type: "sqlite"
+  path: "data/referrals.db"
+
+external_systems:
+  mock_mode: true
+  
+  ehr:
+    base_url: "http://localhost:8001"
+    api_key: "YOUR_EHR_API_KEY"
+    timeout: 30
+    
+  payer:
+    base_url: "http://localhost:8002"
+    api_key: "YOUR_PAYER_API_KEY"
+    timeout: 30
+    
+  scheduling:
+    base_url: "http://localhost:8003"
+    api_key: "YOUR_SCHEDULING_API_KEY"
+    timeout: 30
+
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/application.log"
+
+security:
+  enable_audit_log: true
+  audit_log_path: "logs/audit.log"

@@ -1,0 +1,18 @@
+{
+  "patient": {
+    "patient_id": "PT001",
+    "first_name": "John",
+    "last_name": "Doe",
+    "date_of_birth": "1980-05-15",
+    "phone": "555-0100",
+    "email": "john.doe@example.com",
+    "insurance_id": "INS12345",
+    "insurance_provider": "Blue Cross"
+  },
+  "referring_provider_id": "DR001",
+  "specialty_requested": "Cardiology",
+  "diagnosis_codes": ["I10", "E11.9"],
+  "clinical_summary": "Patient with uncontrolled hypertension and type 2 diabetes. Requires cardiology evaluation for cardiovascular risk assessment.",
+  "priority": "routine",
+  "preferred_location": "Boston, MA"
+}

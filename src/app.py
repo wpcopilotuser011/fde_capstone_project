@@ -1,0 +1,408 @@
+"""
+FastAPI Application - Main Entry Point
+Intelligent Care Coordination & Referral Management Platform
+"""
+from fastapi import FastAPI, HTTPException, Depends, BackgroundTasks, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from contextlib import asynccontextmanager
+import logging
+import os
+from datetime import datetime
+
+from .models import (
+    ReferralRequest, ReferralResponse,
+    EligibilityRequest, EligibilityResponse,
+    SpecialistSearchRequest, SpecialistRecommendation,
+    AppointmentRequest, AppointmentResponse,
+    ConversationRequest, ConversationResponse,
+    DocumentAnalysisRequest, DocumentAnalysisResponse,
+    ReferralHistorySummary
+)
+from .database import DatabaseManager
+from .services.referral_service import ReferralService, DocumentService, HistoryService
+from .agents.referral_agent import ReferralAgent, ConversationalAgentOrchestrator
+from .config import config
+
+# Setup logging
+logging.basicConfig(
+    level=config.get('logging.level', 'INFO'),
+    format=config.get('logging.format', '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+)
+logger = logging.getLogger(__name__)
+
+# Global instances
+db_manager = None
+referral_service = None
+document_service = None
+history_service = None
+referral_agent = None
+conversation_agent = None
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Lifespan context manager for startup/shutdown"""
+    global db_manager, referral_service, document_service, history_service
+    global referral_agent, conversation_agent
+    
+    # Startup
+    logger.info("Starting Referral Management Platform...")
+    
+    # Initialize database
+    db_path = config.get('database.path', 'data/referrals.db')
+    db_manager = DatabaseManager(db_path)
+    db_manager.init_sample_data()
+    
+    # Initialize services
+    referral_service = ReferralService(db_manager)
+    document_service = DocumentService(db_manager)
+    history_service = HistoryService(db_manager)
+    
+    # Initialize AI agents
+    try:
+        ai_config = config.get_ai_config()
+        referral_agent = ReferralAgent(
+            model_name=ai_config.get('llm_model', 'gpt-4'),
+            api_key=ai_config.get('api_key'),
+            api_base=ai_config.get('api_base')
+        )
+        conversation_agent = ConversationalAgentOrchestrator(
+            model_name=ai_config.get('llm_model', 'gpt-4')
+        )
+        logger.info("AI agents initialized successfully")
+    except Exception as e:
+        logger.warning(f"AI agents initialization failed: {e}. Running in limited mode.")
+    
+    logger.info("Application started successfully")
+    
+    yield
+    
+    # Shutdown
+    logger.info("Shutting down Referral Management Platform...")
+
+
+# Create FastAPI app
+app = FastAPI(
+    title="Intelligent Care Coordination & Referral Management Platform",
+    description="AI-powered referral management system with MCP integration",
+    version="1.0.0",
+    lifespan=lifespan
+)
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+# Health check endpoint
+@app.get("/")
+async def root():
+    """Root endpoint - health check"""
+    return {
+        "status": "healthy",
+        "service": "Intelligent Referral Management Platform",
+        "version": "1.0.0",
+        "timestamp": datetime.now().isoformat()
+    }
+
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint"""
+    return {
+        "status": "healthy",
+        "database": "connected" if db_manager else "not connected",
+        "ai_agents": "active" if referral_agent else "inactive"
+    }
+
+
+# Referral Management Endpoints
+
+@app.post("/api/v1/referrals", response_model=ReferralResponse)
+async def submit_referral(request: ReferralRequest, background_tasks: BackgroundTasks):
+    """
+    Submit a new referral
+    This triggers the AI-powered referral workflow
+    """
+    try:
+        # Submit referral through service
+        response = await referral_service.submit_referral(request)
+        
+        # Trigger background AI processing if agent available
+        if referral_agent:
+            background_tasks.add_task(
+                process_referral_with_ai,
+                response.referral_id,
+                request
+            )
+        
+        return response
+    except Exception as e:
+        logger.error(f"Error submitting referral: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/v1/referrals/{referral_id}", response_model=ReferralResponse)
+async def get_referral_status(referral_id: str):
+    """Get referral status by ID"""
+    try:
+        response = await referral_service.get_referral_status(referral_id)
+        if not response:
+            raise HTTPException(status_code=404, detail="Referral not found")
+        return response
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting referral status: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/v1/eligibility", response_model=EligibilityResponse)
+async def check_eligibility(request: EligibilityRequest):
+    """
+    Verify insurance eligibility for a patient
+    """
+    try:
+        response = await referral_service.verify_eligibility(request)
+        return response
+    except Exception as e:
+        logger.error(f"Error checking eligibility: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/v1/specialists/search")
+async def search_specialists(request: SpecialistSearchRequest):
+    """
+    AI Opportunity #2: Search and recommend specialists
+    Uses AI-powered matching based on diagnosis, location, insurance, and availability
+    """
+    try:
+        recommendations = await referral_service.search_specialists(request)
+        return {"specialists": recommendations, "count": len(recommendations)}
+    except Exception as e:
+        logger.error(f"Error searching specialists: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/v1/appointments", response_model=AppointmentResponse)
+async def schedule_appointment(request: AppointmentRequest):
+    """
+    Schedule an appointment with a specialist
+    """
+    try:
+        response = await referral_service.schedule_appointment(request)
+        return response
+    except Exception as e:
+        logger.error(f"Error scheduling appointment: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# Document Management Endpoints
+
+@app.post("/api/v1/documents/analyze", response_model=DocumentAnalysisResponse)
+async def analyze_document(request: DocumentAnalysisRequest):
+    """
+    AI Opportunity #1: Analyze document and extract diagnosis/procedure codes
+    Uses AI to extract ICD-10 and CPT codes from clinical documents
+    """
+    try:
+        response = await document_service.analyze_document(request)
+        return response
+    except Exception as e:
+        logger.error(f"Error analyzing document: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/v1/documents/check-completeness")
+async def check_document_completeness(documents: list, specialty: str):
+    """
+    AI Opportunity #4: Check for missing documents
+    Identifies missing required documents before referral submission
+    """
+    try:
+        missing = await document_service.check_missing_documents(documents, specialty)
+        return {
+            "complete": len(missing) == 0,
+            "missing_documents": missing,
+            "required_documents": documents
+        }
+    except Exception as e:
+        logger.error(f"Error checking documents: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/v1/documents/upload")
+async def upload_document(file: UploadFile = File(...), document_type: str = "referral_form"):
+    """
+    Upload a clinical document for processing
+    """
+    try:
+        # Create uploads directory
+        upload_dir = "data/uploads"
+        os.makedirs(upload_dir, exist_ok=True)
+        
+        # Save file
+        file_path = os.path.join(upload_dir, file.filename)
+        with open(file_path, "wb") as f:
+            content = await file.read()
+            f.write(content)
+        
+        # Generate document ID
+        import uuid
+        document_id = f"DOC{str(uuid.uuid4())[:8].upper()}"
+        
+        return {
+            "document_id": document_id,
+            "filename": file.filename,
+            "document_type": document_type,
+            "file_path": file_path,
+            "size": len(content),
+            "uploaded_at": datetime.now().isoformat()
+        }
+    except Exception as e:
+        logger.error(f"Error uploading document: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# Conversational AI Endpoints
+
+@app.post("/api/v1/conversation", response_model=ConversationResponse)
+async def chat(request: ConversationRequest):
+    """
+    AI Opportunity #6: Conversational assistant
+    Answer patient queries through AI-powered conversational interface
+    """
+    try:
+        if conversation_agent:
+            response = await conversation_agent.handle_conversation(
+                user_id=request.user_id,
+                message=request.message,
+                session_id=request.session_id
+            )
+        else:
+            # Fallback response
+            response = {
+                "session_id": request.session_id or "default",
+                "message": "I'm here to help with your referral. How can I assist you?",
+                "suggestions": ["Check status", "Find specialist", "Schedule appointment"]
+            }
+        
+        return ConversationResponse(**response)
+    except Exception as e:
+        logger.error(f"Error in conversation: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# Patient History Endpoints
+
+@app.get("/api/v1/patients/{patient_id}/history", response_model=ReferralHistorySummary)
+async def get_patient_history(patient_id: str):
+    """
+    AI Opportunity #3: Summarize referral history
+    Generate AI-powered summary of patient's referral history for specialists
+    """
+    try:
+        summary = await history_service.get_patient_history(patient_id)
+        return summary
+    except Exception as e:
+        logger.error(f"Error getting patient history: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# AI Agent Processing (Background)
+
+async def process_referral_with_ai(referral_id: str, request: ReferralRequest):
+    """
+    Background task to process referral through AI agent workflow
+    """
+    try:
+        logger.info(f"Processing referral {referral_id} with AI agent")
+        
+        initial_state = {
+            "referral_id": referral_id,
+            "patient_id": request.patient.patient_id,
+            "documents": []
+        }
+        
+        result = await referral_agent.process_referral(initial_state)
+        
+        logger.info(f"AI processing completed for referral {referral_id}")
+        logger.info(f"Completed steps: {result.get('completed_steps', [])}")
+        
+    except Exception as e:
+        logger.error(f"Error in AI processing: {e}")
+
+
+# Testing & Demo Endpoints
+
+@app.post("/api/v1/demo/process-referral")
+async def demo_process_referral():
+    """
+    Demo endpoint to showcase complete AI-powered referral workflow
+    """
+    try:
+        # Create demo referral
+        from .models import Patient, ReferralPriority
+        
+        demo_request = ReferralRequest(
+            patient=Patient(
+                patient_id="PT001",
+                first_name="John",
+                last_name="Doe",
+                date_of_birth="1980-05-15",
+                phone="555-0100",
+                email="john.doe@example.com",
+                insurance_id="INS12345",
+                insurance_provider="Blue Cross"
+            ),
+            referring_provider_id="DR001",
+            specialty_requested="Cardiology",
+            diagnosis_codes=["I10", "E11.9"],
+            clinical_summary="Patient with uncontrolled hypertension and diabetes. Requires cardiology evaluation.",
+            priority=ReferralPriority.ROUTINE
+        )
+        
+        # Submit referral
+        response = await referral_service.submit_referral(demo_request)
+        
+        # Process with AI
+        if referral_agent:
+            initial_state = {
+                "referral_id": response.referral_id,
+                "patient_id": demo_request.patient.patient_id,
+                "documents": []
+            }
+            
+            ai_result = await referral_agent.process_referral(initial_state)
+            
+            return {
+                "referral": response,
+                "ai_processing": {
+                    "completed_steps": ai_result.get('completed_steps', []),
+                    "current_step": ai_result.get('current_step'),
+                    "specialist": ai_result.get('selected_specialist', {}),
+                    "appointment": ai_result.get('appointment', {})
+                }
+            }
+        else:
+            return {"referral": response, "ai_processing": "Not available"}
+        
+    except Exception as e:
+        logger.error(f"Error in demo: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(
+        "app:app",
+        host=config.get('app.host', '0.0.0.0'),
+        port=config.get('app.port', 8000),
+        reload=True
+    )
