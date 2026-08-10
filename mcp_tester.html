@@ -223,9 +223,11 @@
       const headers = {
         "Content-Type": "application/json",
         "Accept": "application/json, text/event-stream",
-        "Authorization": `Bearer ${bearer}`,
         "mcp-protocol-version": "2025-06-18"
       };
+      if (bearer) {
+        headers["Authorization"] = `Bearer ${bearer}`;
+      }
       if (withSession && sessionId) {
         headers["mcp-session-id"] = sessionId;
       }
@@ -288,11 +290,6 @@
 
       if (!serverUrl) {
         setStatus("Please provide server URL.", false);
-        return;
-      }
-
-      if (!bearer) {
-        setStatus("Please provide bearer token.", false);
         return;
       }
 
