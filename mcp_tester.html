@@ -264,6 +264,13 @@
         }
         const asMeta = await asResp.json();
 
+        const prResp = await fetch(`${base}/.well-known/oauth-protected-resource`);
+        if (!prResp.ok) {
+          throw new Error(`Protected resource discovery failed: HTTP ${prResp.status}`);
+        }
+        const prMeta = await prResp.json();
+        const resource = prMeta.resource || base;
+
         const redirectUri = `${window.location.origin}${window.location.pathname}`;
         const regResp = await fetch(asMeta.registration_endpoint, {
           method: "POST",
@@ -297,12 +304,14 @@
         sessionStorage.setItem("mcp_oauth_state", state);
         sessionStorage.setItem("mcp_oauth_token_endpoint", asMeta.token_endpoint);
         sessionStorage.setItem("mcp_oauth_redirect_uri", redirectUri);
+        sessionStorage.setItem("mcp_oauth_resource", resource);
 
         const authUrl = new URL(asMeta.authorization_endpoint);
         authUrl.searchParams.set("response_type", "code");
         authUrl.searchParams.set("client_id", clientId);
         authUrl.searchParams.set("redirect_uri", redirectUri);
         authUrl.searchParams.set("scope", "openid profile email offline_access");
+        authUrl.searchParams.set("resource", resource);
         authUrl.searchParams.set("code_challenge", codeChallenge);
         authUrl.searchParams.set("code_challenge_method", "S256");
         authUrl.searchParams.set("state", state);
@@ -334,6 +343,7 @@
         const codeVerifier = sessionStorage.getItem("mcp_oauth_verifier");
         const tokenEndpoint = sessionStorage.getItem("mcp_oauth_token_endpoint");
         const redirectUri = sessionStorage.getItem("mcp_oauth_redirect_uri");
+        const resource = sessionStorage.getItem("mcp_oauth_resource");
 
         if (!clientId || !codeVerifier || !tokenEndpoint || !redirectUri) {
           throw new Error("OAuth session data missing. Please click Login with Horizon OAuth again.");
@@ -346,6 +356,9 @@
         form.set("code", code);
         form.set("redirect_uri", redirectUri);
         form.set("code_verifier", codeVerifier);
+        if (resource) {
+          form.set("resource", resource);
+        }
 
         const tokenResp = await fetch(tokenEndpoint, {
           method: "POST",
