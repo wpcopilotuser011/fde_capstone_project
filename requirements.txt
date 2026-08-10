@@ -6,6 +6,7 @@ python-dotenv==1.0.1
 PyYAML==6.0.2
 
 # AI & MCP
+fastmcp>=0.1.0
 langgraph==0.2.45
 langchain==0.3.7
 langchain-openai==0.2.8
