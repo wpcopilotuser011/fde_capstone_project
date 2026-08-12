@@ -63,6 +63,23 @@ class ConfigManager:
         if os.getenv('DATABASE_URL'):
             self.config.setdefault('database', {})['url'] = os.getenv('DATABASE_URL')
         
+        if os.getenv('DB_TYPE'):
+            self.config.setdefault('database', {})['type'] = os.getenv('DB_TYPE')
+        
+        # MySQL connection details (password intentionally not mirrored into
+        # self.config - DatabaseManager reads MYSQL_PASSWORD directly from
+        # the environment so it never ends up in a config dict/dump/log).
+        mysql_overrides = {
+            'host': os.getenv('MYSQL_HOST'),
+            'port': os.getenv('MYSQL_PORT'),
+            'user': os.getenv('MYSQL_USER'),
+            'name': os.getenv('MYSQL_DATABASE'),
+        }
+        if any(mysql_overrides.values()):
+            self.config.setdefault('database', {}).setdefault('mysql', {}).update(
+                {k: v for k, v in mysql_overrides.items() if v}
+            )
+        
         # Application
         if os.getenv('APP_ENV'):
             self.config.setdefault('app', {})['environment'] = os.getenv('APP_ENV')

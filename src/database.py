@@ -5,7 +5,13 @@ from sqlalchemy import create_engine, Column, String, DateTime, JSON, Float, Int
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
+from urllib.parse import quote_plus
+from dotenv import load_dotenv
 import os
+
+# Ensure MYSQL_* / DB_TYPE env vars are available even if this module is
+# imported before src.config has had a chance to call load_dotenv().
+load_dotenv()
 
 Base = declarative_base()
 
@@ -111,18 +117,60 @@ class DatabaseManager:
     """Database manager for handling connections and sessions"""
     
     def __init__(self, db_path: str = "data/referrals.db"):
-        """Initialize database manager"""
-        # Ensure data directory exists
-        os.makedirs(os.path.dirname(db_path), exist_ok=True)
-        
-        # Create engine
-        self.engine = create_engine(f'sqlite:///{db_path}', echo=False)
+        """Initialize database manager.
+
+        Tries to connect to MySQL first, using MYSQL_HOST / MYSQL_PORT /
+        MYSQL_USER / MYSQL_PASSWORD / MYSQL_DATABASE environment variables
+        (see .env). If MySQL is not reachable (wrong credentials, server
+        down, driver missing, etc.), this automatically falls back to a
+        local SQLite database at `db_path` instead of raising - the app
+        should never fail to start just because MySQL is unavailable.
+        """
+        self.engine = self._create_engine(db_path)
         
         # Create all tables
         Base.metadata.create_all(self.engine)
         
         # Create session maker
         self.SessionLocal = sessionmaker(bind=self.engine)
+    
+    def _create_engine(self, db_path: str):
+        """Build the DB engine: MySQL if reachable, otherwise SQLite fallback."""
+        db_type = os.getenv("DB_TYPE", "mysql").lower()
+        
+        if db_type == "mysql":
+            mysql_host = os.getenv("MYSQL_HOST", "localhost")
+            mysql_port = os.getenv("MYSQL_PORT", "3306")
+            mysql_user = os.getenv("MYSQL_USER", "root")
+            mysql_password = os.getenv("MYSQL_PASSWORD", "")
+            mysql_database = os.getenv("MYSQL_DATABASE", "referrals")
+            
+            mysql_url = (
+                f"mysql+pymysql://{quote_plus(mysql_user)}:{quote_plus(mysql_password)}"
+                f"@{mysql_host}:{mysql_port}/{mysql_database}"
+            )
+            
+            try:
+                mysql_engine = create_engine(
+                    mysql_url,
+                    echo=False,
+                    pool_pre_ping=True,
+                    connect_args={"connect_timeout": 5},
+                )
+                # Force an actual connection attempt now (create_engine is lazy)
+                with mysql_engine.connect():
+                    pass
+                print(f"Connected to MySQL database at {mysql_host}:{mysql_port}/{mysql_database}")
+                return mysql_engine
+            except Exception as e:
+                print(
+                    f"MySQL connection failed ({e}); falling back to local SQLite "
+                    f"database at '{db_path}'."
+                )
+        
+        # Fallback: local SQLite (also used when DB_TYPE is explicitly "sqlite")
+        os.makedirs(os.path.dirname(db_path) or ".", exist_ok=True)
+        return create_engine(f"sqlite:///{db_path}", echo=False)
     
     def get_session(self):
         """Get a new database session"""

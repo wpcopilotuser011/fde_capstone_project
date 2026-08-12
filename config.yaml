@@ -29,8 +29,12 @@ mcp:
       type: "stdio"
 
 database:
-  type: "sqlite"
-  path: "data/referrals.db"
+  # Primary DB is MySQL, configured entirely via env vars: DB_TYPE,
+  # MYSQL_HOST, MYSQL_PORT, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE
+  # (see .env). If MySQL can't be reached, the app automatically falls
+  # back to the local SQLite file below instead of failing to start.
+  type: "mysql"
+  path: "data/referrals.db"  # SQLite fallback path
 
 external_systems:
   # Mock mode for development
