@@ -1,5 +1,50 @@
 # Testing Guide
 
+## Table of Contents
+
+- [Overview](#overview)
+- [Test Coverage](#test-coverage)
+  - [Unit Tests](#unit-tests)
+  - [Integration Tests](#integration-tests)
+  - [AI Opportunity Tests](#ai-opportunity-tests)
+- [Running Tests](#running-tests)
+  - [Quick Test (All Features)](#quick-test-all-features)
+  - [Unit Tests](#unit-tests-1)
+  - [Integration Tests](#integration-tests-1)
+  - [All Tests with Coverage](#all-tests-with-coverage)
+- [Manual Testing](#manual-testing)
+  - [Using Interactive API Docs](#using-interactive-api-docs)
+  - [Using cURL](#using-curl)
+  - [Using Python](#using-python)
+- [Test Data](#test-data)
+  - [Sample Patients](#sample-patients)
+  - [Sample Providers](#sample-providers)
+  - [Sample Diagnosis Codes](#sample-diagnosis-codes)
+- [Expected Results](#expected-results)
+  - [AI Opportunity #1: Document Analysis](#ai-opportunity-1-document-analysis)
+  - [AI Opportunity #2: Specialist Recommendation](#ai-opportunity-2-specialist-recommendation)
+  - [AI Opportunity #3: History Summary](#ai-opportunity-3-history-summary)
+  - [AI Opportunity #4: Document Completeness](#ai-opportunity-4-document-completeness)
+- [Performance Testing](#performance-testing)
+  - [Load Test (Basic)](#load-test-basic)
+  - [Response Time Targets](#response-time-targets)
+- [Functional Test Scenarios](#functional-test-scenarios)
+  - [Scenario 1: Happy Path - Complete Referral](#scenario-1-happy-path---complete-referral)
+  - [Scenario 2: Missing Documents](#scenario-2-missing-documents)
+  - [Scenario 3: Conversational Flow](#scenario-3-conversational-flow)
+  - [Scenario 4: AI Analysis](#scenario-4-ai-analysis)
+- [Troubleshooting Tests](#troubleshooting-tests)
+  - [If Tests Fail](#if-tests-fail)
+  - [Common Issues](#common-issues)
+- [Test Reporting](#test-reporting)
+  - [Generate Test Report](#generate-test-report)
+  - [View Coverage](#view-coverage)
+- [Continuous Testing](#continuous-testing)
+  - [Watch Mode (Development)](#watch-mode-development)
+  - [Pre-commit Tests](#pre-commit-tests)
+- [Evaluation Checklist](#evaluation-checklist)
+- [Test Evidence](#test-evidence)
+
 ## Overview
 
 This document provides comprehensive testing instructions for the Intelligent Care Coordination & Referral Management Platform.
@@ -80,7 +125,7 @@ xdg-open htmlcov/index.html  # On Linux
 
 ### Using cURL
 
-See [API_EXAMPLES.md](API_EXAMPLES.md) for comprehensive examples.
+See [API_EXAMPLES.md](../api/API_EXAMPLES.md) for comprehensive examples.
 
 #### Quick Test Commands
 

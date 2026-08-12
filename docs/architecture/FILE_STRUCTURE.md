@@ -1,19 +1,60 @@
 # Project File Structure
 
+## Table of Contents
+
+- [Complete File Tree](#complete-file-tree)
+- [File Count Summary](#file-count-summary)
+- [Key Files by Purpose](#key-files-by-purpose)
+  - [Getting Started](#-getting-started)
+  - [Setup & Configuration](#-setup--configuration)
+  - [Deployment](#-deployment)
+  - [Core Application](#-core-application)
+  - [Testing](#-testing)
+  - [Learning & Reference](#-learning--reference)
+- [Lines of Code](#lines-of-code)
+- [File Descriptions](#file-descriptions)
+  - [Documentation](#documentation)
+  - [Configuration](#configuration)
+  - [Source Code](#source-code)
+  - [Tests](#tests)
+  - [Deployment](#deployment-1)
+- [Important Notes](#important-notes)
+  - [Files to Create Locally (Gitignored)](#files-to-create-locally-gitignored)
+  - [Files Created at Runtime](#files-created-at-runtime)
+- [Quick Reference](#quick-reference)
+  - [To Start Development](#to-start-development)
+  - [To Deploy with Docker](#to-deploy-with-docker)
+  - [To Test](#to-test)
+  - [To Access](#to-access)
+
 ## Complete File Tree
 
 ```
 Capstone Assignment/
 │
-├── 📋 Documentation Files
-│   ├── requirements.md              # Exact project requirements
-│   ├── README.md                    # Main project documentation
-│   ├── QUICKSTART.md                # 5-minute setup guide
-│   ├── API_EXAMPLES.md              # API usage examples
-│   ├── ARCHITECTURE.md              # System architecture & design
-│   ├── DEPLOYMENT.md                # VM deployment guide
-│   ├── TESTING.md                   # Testing procedures
-│   └── PROJECT_SUMMARY.md           # Project completion summary
+├── 📋 Documentation (docs/)
+│   ├── project/
+│   │   ├── requirements.md          # Exact project requirements
+│   │   └── PROJECT_SUMMARY.md       # Project completion summary
+│   ├── architecture/
+│   │   ├── ARCHITECTURE.md          # System architecture & design
+│   │   └── FILE_STRUCTURE.md        # This file
+│   ├── agents/
+│   │   ├── AGENTS.md                # AI agents documentation
+│   │   ├── MCP_USAGE.md             # MCP servers & tools
+│   │   └── LANGGRAPH_ORCHESTRATION.md # LangGraph workflow
+│   ├── api/
+│   │   ├── API_EXAMPLES.md          # API usage examples
+│   │   └── TEST_PAYLOADS.md         # Sample request payloads
+│   ├── deployment/
+│   │   ├── QUICKSTART.md            # 5-minute setup guide
+│   │   └── DEPLOYMENT.md            # VM deployment guide
+│   ├── testing/
+│   │   └── TESTING.md               # Testing procedures
+│   └── demo/
+│       ├── DEMO_GUIDE.md            # Live demo script
+│       └── TECHNICAL_QA.md          # Technical Q&A prep
+├── README.md                        # Main project documentation (root)
 │
 ├── 🐳 Docker & Deployment
 │   ├── Dockerfile                   # Docker image definition
@@ -66,19 +107,19 @@ Capstone Assignment/
 
 ## File Count Summary
 
-- **Documentation**: 8 files
+- **Documentation**: 13 files across 7 topic folders under `docs/`, plus root `README.md`
 - **Configuration**: 5 files
 - **Source Code**: 11 Python files
 - **Tests**: 3 Python files + 1 shell script
 - **Deployment**: 4 files
-- **Total**: 32+ files
+- **Total**: 37+ files
 
 ## Key Files by Purpose
 
 ### 🚀 Getting Started
-1. **QUICKSTART.md** - Start here!
-2. **README.md** - Complete documentation
-3. **requirements.md** - Project requirements
+1. **docs/deployment/QUICKSTART.md** - Start here!
+2. **README.md** - Complete documentation (root)
+3. **docs/project/requirements.md** - Project requirements
 
 ### 🔧 Setup & Configuration
 1. **.env.example** → create `.env` with your API keys
@@ -102,10 +143,12 @@ Capstone Assignment/
 3. **tests/test_referral_service.py** - Service unit tests
 
 ### 📖 Learning & Reference
-1. **ARCHITECTURE.md** - System design
-2. **API_EXAMPLES.md** - API usage examples
-3. **DEPLOYMENT.md** - VM deployment guide
-4. **TESTING.md** - Testing procedures
+1. **docs/architecture/ARCHITECTURE.md** - System design
+2. **docs/api/API_EXAMPLES.md** - API usage examples
+3. **docs/deployment/DEPLOYMENT.md** - VM deployment guide
+4. **docs/testing/TESTING.md** - Testing procedures
+5. **docs/agents/AGENTS.md**, **docs/agents/MCP_USAGE.md**, **docs/agents/LANGGRAPH_ORCHESTRATION.md** - AI agent internals
+6. **docs/demo/DEMO_GUIDE.md**, **docs/demo/TECHNICAL_QA.md** - Demo script and Q&A prep
 
 ## Lines of Code
 
@@ -122,14 +165,19 @@ Approximate breakdown:
 
 | File | Description | Size |
 |------|-------------|------|
-| requirements.md | Exact project requirements from assignment | Large |
-| README.md | Complete project documentation with usage | Large |
-| QUICKSTART.md | 5-minute setup guide | Medium |
-| API_EXAMPLES.md | Comprehensive API examples with curl & Python | Large |
-| ARCHITECTURE.md | System architecture, design decisions, ADRs | Large |
-| DEPLOYMENT.md | Step-by-step VM deployment guide | Large |
-| TESTING.md | Testing procedures and guidelines | Large |
-| PROJECT_SUMMARY.md | Project completion summary | Medium |
+| docs/project/requirements.md | Exact project requirements from assignment | Large |
+| README.md | Complete project documentation with usage (root) | Large |
+| docs/deployment/QUICKSTART.md | 5-minute setup guide | Medium |
+| docs/api/API_EXAMPLES.md | Comprehensive API examples with curl & Python | Large |
+| docs/architecture/ARCHITECTURE.md | System architecture, design decisions, ADRs | Large |
+| docs/deployment/DEPLOYMENT.md | Step-by-step VM deployment guide | Large |
+| docs/testing/TESTING.md | Testing procedures and guidelines | Large |
+| docs/project/PROJECT_SUMMARY.md | Project completion summary | Medium |
+| docs/agents/AGENTS.md | AI agents (LangGraph agent, conversational orchestrator) | Large |
+| docs/agents/MCP_USAGE.md | MCP servers, tools, and usage | Large |
+| docs/agents/LANGGRAPH_ORCHESTRATION.md | LangGraph state graph and workflow | Large |
+| docs/demo/DEMO_GUIDE.md | Live demo script | Medium |
+| docs/demo/TECHNICAL_QA.md | Prepared technical Q&A | Large |
 
 ### Configuration
 

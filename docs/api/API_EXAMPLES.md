@@ -1,5 +1,19 @@
 # API Examples
 
+## Table of Contents
+
+- [Example 1: Submit a Referral](#example-1-submit-a-referral)
+- [Example 2: Check Eligibility](#example-2-check-eligibility)
+- [Example 3: AI-Powered Specialist Search](#example-3-ai-powered-specialist-search)
+- [Example 4: Analyze Document (Extract Codes)](#example-4-analyze-document-extract-codes)
+- [Example 5: Check Document Completeness](#example-5-check-document-completeness)
+- [Example 6: Conversational AI Assistant](#example-6-conversational-ai-assistant)
+- [Example 7: Get Patient History Summary](#example-7-get-patient-history-summary)
+- [Example 8: Schedule Appointment](#example-8-schedule-appointment)
+- [Example 9: Upload Document](#example-9-upload-document)
+- [Example 10: Complete Workflow Demo](#example-10-complete-workflow-demo)
+- [Using Python Requests](#using-python-requests)
+
 ## Example 1: Submit a Referral
 
 ```bash

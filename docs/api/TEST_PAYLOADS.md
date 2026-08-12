@@ -7,6 +7,22 @@
 
 ---
 
+## Table of Contents
+
+- [Intelligent Referral Management Platform](#intelligent-referral-management-platform)
+- [QUICK START - Test All Features](#-quick-start---test-all-features)
+- [AI OPPORTUNITY #1: Document Code Extraction](#-ai-opportunity-1-document-code-extraction)
+- [AI OPPORTUNITY #2: Specialist Recommendation](#-ai-opportunity-2-specialist-recommendation)
+- [AI OPPORTUNITY #3: Referral History Summary](#-ai-opportunity-3-referral-history-summary)
+- [AI OPPORTUNITY #4: Missing Document Detection](#-ai-opportunity-4-missing-document-detection)
+- [BONUS: AI OPPORTUNITY #6 - Conversational Assistant](#-bonus-ai-opportunity-6---conversational-assistant)
+- [COMPLETE REFERRAL SUBMISSION](#-complete-referral-submission)
+- [COMPLETE WORKFLOW DEMO](#-complete-workflow-demo)
+- [ADDITIONAL ENDPOINTS](#-additional-endpoints)
+- [TESTING SCRIPT](#-testing-script)
+- [FOR DEPLOYMENT ON TEKSTAC VM](#-for-deployment-on-tekstac-vm)
+- [EVALUATION CHECKLIST](#-evaluation-checklist)
+
 ## ✅ QUICK START - Test All Features
 
 ### 1️⃣ Health Check

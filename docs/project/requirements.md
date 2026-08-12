@@ -1,5 +1,21 @@
 # Intelligent Care Coordination & Referral Management Platform
 
+## Table of Contents
+
+- [Problem Statement](#problem-statement)
+- [Solution Overview](#solution-overview)
+- [AI Integration Requirements](#ai-integration-requirements)
+  - [Hint: Intelligent Referral Coordinator](#hint-intelligent-referral-coordinator)
+- [AI Opportunities (Implement at least 4)](#ai-opportunities-implement-at-least-4)
+- [Deliverables](#deliverables)
+  - [1. Architecture & Designing](#1-architecture--designing)
+  - [2. Implementation (Coding & Testing)](#2-implementation-coding--testing)
+  - [3. Deployment](#3-deployment)
+- [Evaluation Focus Areas](#evaluation-focus-areas)
+- [Technical Implementation Notes](#technical-implementation-notes)
+- [Selected AI Opportunities for Implementation](#selected-ai-opportunities-for-implementation)
+- [Compliance & Privacy](#compliance--privacy)
+
 ## Problem Statement
 
 Patients referred by primary care providers to specialist physicians frequently encounter delays and uncertainty throughout the referral process due to disconnected healthcare systems, incomplete clinical information, manual insurance validation, and inefficient appointment scheduling workflows. These challenges often result in longer wait times, poor care coordination, limited visibility into referral status, and reduced patient satisfaction.

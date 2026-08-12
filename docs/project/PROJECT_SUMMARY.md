@@ -1,8 +1,23 @@
 # Project Summary
 
-## Intelligent Care Coordination & Referral Management Platform
+## Table of Contents
 
-### 📋 Project Overview
+- [Intelligent Care Coordination & Referral Management Platform](#intelligent-care-coordination--referral-management-platform)
+  - [Project Overview](#-project-overview)
+  - [Requirements Fulfilled](#-requirements-fulfilled)
+  - [AI Opportunities Implemented (4/7 Required)](#-ai-opportunities-implemented-47-required)
+  - [Technical Architecture](#️-technical-architecture)
+  - [Documentation](#-documentation)
+  - [Deployment](#-deployment)
+  - [Testing](#-testing)
+  - [Key Features](#-key-features)
+  - [Evaluation Checklist](#-evaluation-checklist)
+  - [Learning Outcomes Demonstrated](#-learning-outcomes-demonstrated)
+  - [Next Steps for Production](#-next-steps-for-production)
+  - [Project Status](#-project-status)
+  - [Support](#-support)
+
+## Intelligent Care Coordination & Referral Management Platform
 
 This is a complete, production-ready implementation of an AI-powered referral management platform for the FDE Program Capstone Assignment. The solution demonstrates end-to-end healthcare referral workflow automation with 4 AI-powered capabilities integrated via Model Context Protocol (MCP).
 

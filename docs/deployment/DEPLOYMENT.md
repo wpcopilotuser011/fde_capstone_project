@@ -1,5 +1,41 @@
 # Deployment Guide for Tekstac Virtual Machine
 
+## Table of Contents
+
+- [Pre-Deployment Checklist](#pre-deployment-checklist)
+  - [Before Copying Code to VM](#-before-copying-code-to-vm)
+- [Step 1: Copy Project to Virtual Machine](#step-1-copy-project-to-virtual-machine)
+  - [Option A: Using SCP (if you have direct access)](#option-a-using-scp-if-you-have-direct-access)
+  - [Option B: Using Git (recommended)](#option-b-using-git-recommended)
+  - [Option C: Manual Copy (if using web interface)](#option-c-manual-copy-if-using-web-interface)
+- [Step 2: Setup on Tekstac VM](#step-2-setup-on-tekstac-vm)
+  - [1. Connect to VM](#1-connect-to-vm)
+  - [2. Navigate to Project](#2-navigate-to-project)
+  - [3. Create Configuration Files](#3-create-configuration-files)
+  - [4. Verify Python Version](#4-verify-python-version)
+  - [5. Install Docker (if not already installed)](#5-install-docker-if-not-already-installed)
+- [Step 3: Build and Deploy](#step-3-build-and-deploy)
+  - [Method 1: Using Docker (Recommended for Evaluation)](#method-1-using-docker-recommended-for-evaluation)
+  - [Method 2: Using Docker Compose](#method-2-using-docker-compose)
+  - [Method 3: Direct Python (if Docker not available)](#method-3-direct-python-if-docker-not-available)
+- [Step 4: Verify Deployment](#step-4-verify-deployment)
+  - [1. Health Check](#1-health-check)
+  - [2. Test API Docs](#2-test-api-docs)
+  - [3. Run Demo Workflow](#3-run-demo-workflow)
+  - [4. Check Logs](#4-check-logs)
+- [Step 5: Run Tests (Optional)](#step-5-run-tests-optional)
+- [Troubleshooting](#troubleshooting)
+  - [Issue: Port 8000 already in use](#issue-port-8000-already-in-use)
+  - [Issue: Database errors](#issue-database-errors)
+  - [Issue: AI features not working](#issue-ai-features-not-working)
+  - [Issue: Container won't start](#issue-container-wont-start)
+- [Evaluation Checklist](#evaluation-checklist)
+- [Accessing from Outside VM](#accessing-from-outside-vm)
+- [Stopping the Application](#stopping-the-application)
+- [Quick Commands Reference](#quick-commands-reference)
+- [FastMCP on Horizon Deployment](#fastmcp-on-horizon-deployment)
+- [Support During Evaluation](#support-during-evaluation)
+
 ## Pre-Deployment Checklist
 
 ### ✅ Before Copying Code to VM

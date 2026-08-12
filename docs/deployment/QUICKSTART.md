@@ -1,5 +1,31 @@
 # Quick Start Guide
 
+## Table of Contents
+
+- [Get Started in 5 Minutes](#-get-started-in-5-minutes)
+  - [Prerequisites](#prerequisites)
+  - [Method 1: Docker (Fastest)](#method-1-docker-fastest-)
+  - [Method 2: Python Virtual Environment](#method-2-python-virtual-environment)
+- [Try the AI Features](#-try-the-ai-features)
+  - [1. Complete Workflow Demo](#1-complete-workflow-demo)
+  - [2. Document Code Extraction (AI Opportunity #1)](#2-document-code-extraction-ai-opportunity-1)
+  - [3. Specialist Recommendation (AI Opportunity #2)](#3-specialist-recommendation-ai-opportunity-2)
+  - [4. Conversational Assistant (AI Opportunity #6)](#4-conversational-assistant-ai-opportunity-6)
+  - [4. Missing Documents Check (AI Opportunity #4)](#4-missing-documents-check-ai-opportunity-4)
+- [Interactive API Documentation](#-interactive-api-documentation)
+- [Run Tests](#-run-tests)
+- [Documentation](#-documentation)
+- [Configuration](#-configuration)
+  - [Minimal Configuration (Quick Start)](#minimal-configuration-quick-start)
+  - [Full Configuration (Production)](#full-configuration-production)
+- [Troubleshooting](#-troubleshooting)
+  - [Application won't start](#application-wont-start)
+  - [API key errors](#api-key-errors)
+  - [Docker issues](#docker-issues)
+- [Next Steps](#-next-steps)
+- [Need Help?](#-need-help)
+- [You're Ready!](#-youre-ready)
+
 ## 🚀 Get Started in 5 Minutes
 
 ### Prerequisites

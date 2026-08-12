@@ -7,6 +7,40 @@
 
 AI-powered referral management platform implementing 4 key AI opportunities with MCP (Model Context Protocol) integration for seamless healthcare coordination.
 
+## Table of Contents
+
+- [Features](#-features)
+  - [Implemented AI Opportunities](#implemented-ai-opportunities)
+  - [Core Capabilities](#core-capabilities)
+- [Requirements](#-requirements)
+- [Documentation](#-documentation)
+- [Architecture](#️-architecture)
+  - [Technology Stack](#technology-stack)
+  - [Project Structure](#project-structure)
+- [Quick Start](#-quick-start)
+  - [Prerequisites](#prerequisites)
+  - [Local Development Setup](#local-development-setup)
+  - [Docker Deployment](#docker-deployment)
+- [API Documentation](#-api-documentation)
+  - [Core Endpoints](#core-endpoints)
+- [Testing](#-testing)
+  - [Run Unit Tests](#run-unit-tests)
+  - [Run Integration Tests](#run-integration-tests)
+  - [Run All Tests with Coverage](#run-all-tests-with-coverage)
+  - [Manual API Testing](#manual-api-testing)
+- [Configuration](#-configuration)
+  - [Configuration Files](#configuration-files)
+  - [Key Configuration Options](#key-configuration-options)
+- [AI Opportunities Implementation](#-ai-opportunities-implementation)
+- [Workflow](#-workflow)
+- [Security & Compliance](#-security--compliance)
+- [Development Notes](#-development-notes)
+  - [For Deployment to Tekstac Virtual Machine](#for-deployment-to-tekstac-virtual-machine)
+  - [External System Integration](#external-system-integration)
+- [Support](#-support)
+- [License](#-license)
+- [Author](#-author)
+
 ## 🌟 Features
 
 ### Implemented AI Opportunities
@@ -28,7 +62,21 @@ AI-powered referral management platform implementing 4 key AI opportunities with
 
 ## 📋 Requirements
 
-See [requirements.md](requirements.md) for complete project specifications.
+See [docs/project/requirements.md](docs/project/requirements.md) for complete project specifications.
+
+## 📚 Documentation
+
+All project documentation is organized by topic under [docs/](docs/README.md):
+
+| Folder | Contents |
+|--------|----------|
+| [docs/project/](docs/project/README.md) | Requirements, project summary |
+| [docs/architecture/](docs/architecture/README.md) | System architecture, design decisions, file structure |
+| [docs/agents/](docs/agents/README.md) | AI agents, MCP usage, LangGraph orchestration |
+| [docs/api/](docs/api/README.md) | API usage examples and test payloads |
+| [docs/deployment/](docs/deployment/README.md) | Quick start guide, VM/Docker deployment |
+| [docs/testing/](docs/testing/README.md) | Testing guide and procedures |
+| [docs/demo/](docs/demo/README.md) | Live demo script and technical Q&A prep |
 
 ## 🏗️ Architecture
 
@@ -60,6 +108,14 @@ Capstone Assignment/
 ├── tests/
 │   ├── test_referral_service.py  # Unit tests
 │   └── test_api.py               # Integration tests
+├── docs/                         # All documentation, grouped by topic
+│   ├── project/                  # requirements.md, PROJECT_SUMMARY.md
+│   ├── architecture/             # ARCHITECTURE.md, FILE_STRUCTURE.md
+│   ├── agents/                   # AGENTS.md, MCP_USAGE.md, LANGGRAPH_ORCHESTRATION.md
+│   ├── api/                      # API_EXAMPLES.md, TEST_PAYLOADS.md
+│   ├── deployment/               # QUICKSTART.md, DEPLOYMENT.md
+│   ├── testing/                  # TESTING.md
+│   └── demo/                     # DEMO_GUIDE.md, TECHNICAL_QA.md
 ├── config.yaml                   # Base configuration
 ├── config.local.yaml.example     # Local config template
 ├── .env.example                  # Environment variables template

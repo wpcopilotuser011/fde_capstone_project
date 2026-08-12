@@ -1,5 +1,39 @@
 # Architecture Documentation
 
+## Table of Contents
+
+- [System Architecture](#system-architecture)
+  - [High-Level Architecture](#high-level-architecture)
+- [Component Architecture](#component-architecture)
+  - [1. API Layer (FastAPI)](#1-api-layer-fastapi)
+  - [2. AI Agent Orchestration (LangGraph)](#2-ai-agent-orchestration-langgraph)
+  - [3. MCP Servers](#3-mcp-servers)
+  - [4. Service Layer](#4-service-layer)
+  - [5. Data Layer](#5-data-layer)
+- [Data Flow](#data-flow)
+  - [Referral Submission Flow](#referral-submission-flow)
+- [AI Agent Workflow](#ai-agent-workflow)
+  - [LangGraph State Machine](#langgraph-state-machine)
+- [Security Architecture](#security-architecture)
+  - [Configuration Management](#configuration-management)
+  - [Secrets Management](#secrets-management)
+  - [Audit Logging](#audit-logging)
+- [Deployment Architecture](#deployment-architecture)
+  - [Docker Container](#docker-container)
+- [Scalability Considerations](#scalability-considerations)
+  - [Current Implementation](#current-implementation)
+  - [Production Recommendations](#production-recommendations)
+- [Non-Functional Requirements](#non-functional-requirements)
+  - [Performance](#performance)
+  - [Availability](#availability)
+  - [Scalability](#scalability-1)
+  - [Security](#security)
+- [Technology Decisions](#technology-decisions)
+  - [ADR-001: FastAPI vs Flask](#adr-001-fastapi-vs-flask)
+  - [ADR-002: SQLite vs PostgreSQL](#adr-002-sqlite-vs-postgresql)
+  - [ADR-003: LangGraph vs Custom Orchestration](#adr-003-langgraph-vs-custom-orchestration)
+  - [ADR-004: MCP Protocol](#adr-004-mcp-protocol)
+
 ## System Architecture
 
 ### High-Level Architecture
