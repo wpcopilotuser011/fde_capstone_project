@@ -56,6 +56,9 @@ class ConfigManager:
         if os.getenv('ANTHROPIC_API_KEY'):
             self.config.setdefault('ai', {})['anthropic_api_key'] = os.getenv('ANTHROPIC_API_KEY')
         
+        if os.getenv('LLM_MODEL_NAME'):
+            self.config.setdefault('ai', {})['llm_model'] = os.getenv('LLM_MODEL_NAME')
+        
         # Database
         if os.getenv('DATABASE_URL'):
             self.config.setdefault('database', {})['url'] = os.getenv('DATABASE_URL')

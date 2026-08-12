@@ -29,17 +29,24 @@ class ReferralState(TypedDict):
     completed_steps: List[str]
 
 
+# LLM model name is read from the LLM_MODEL_NAME environment variable (see .env).
+# No model identifier is hardcoded here; "gpt-4" is only a last-resort fallback
+# if the environment variable is not set at all.
+DEFAULT_MODEL_NAME = os.getenv("LLM_MODEL_NAME", "gpt-4")
+
+
 class ReferralAgent:
     """Main agent for orchestrating referral workflow"""
     
-    def __init__(self, model_name: str = "gpt-4", api_key: str = None, api_base: str = None):
+    def __init__(self, model_name: str = None, api_key: str = None, api_base: str = None):
         """Initialize the agent with LLM"""
         self.api_key = api_key or os.getenv("OPENAI_API_KEY")
         self.api_base = api_base or os.getenv("OPENAI_API_BASE")
+        self.model_name = model_name or DEFAULT_MODEL_NAME
         
         # Initialize LLM - use ChatOpenAI for Bedrock compatibility
         llm_config = {
-            "model": model_name,
+            "model": self.model_name,
             "temperature": 0.7,
             "api_key": self.api_key
         }
@@ -300,8 +307,8 @@ class ConversationalAgentOrchestrator:
     Orchestrates conversational AI agents for multi-turn interactions
     """
     
-    def __init__(self, model_name: str = "gpt-4"):
-        self.model_name = model_name
+    def __init__(self, model_name: str = None):
+        self.model_name = model_name or DEFAULT_MODEL_NAME
         self.sessions = {}
     
     async def handle_conversation(

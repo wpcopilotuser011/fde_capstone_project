@@ -63,12 +63,12 @@ async def lifespan(app: FastAPI):
     try:
         ai_config = config.get_ai_config()
         referral_agent = ReferralAgent(
-            model_name=ai_config.get('llm_model', 'gpt-4'),
+            model_name=ai_config.get('llm_model'),
             api_key=ai_config.get('api_key'),
             api_base=ai_config.get('api_base')
         )
         conversation_agent = ConversationalAgentOrchestrator(
-            model_name=ai_config.get('llm_model', 'gpt-4')
+            model_name=ai_config.get('llm_model')
         )
         logger.info("AI agents initialized successfully")
     except Exception as e:

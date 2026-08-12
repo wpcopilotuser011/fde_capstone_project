@@ -11,7 +11,9 @@ app:
 
 ai:
   # Model configurations
-  llm_model: "REPLACE_WITH_YOUR_MODEL"  # e.g., gpt-4, claude-3-sonnet
+  # llm_model is intentionally NOT hardcoded here - set it via the
+  # LLM_MODEL_NAME environment variable (see .env / .env.example).
+  # If LLM_MODEL_NAME is unset, code falls back to a generic default.
   temperature: 0.7
   max_tokens: 2000
   

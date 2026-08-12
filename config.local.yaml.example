@@ -10,8 +10,8 @@ app:
   port: 8000
 
 ai:
-  # Replace with your actual model
-  llm_model: "gpt-4"  # or "claude-3-sonnet-20240229" or other model
+  # Set the model via the LLM_MODEL_NAME environment variable instead of
+  # hardcoding it here (keeps model/provider choices out of committed files).
   api_key: "YOUR_API_KEY_HERE"  # Keep this secret!
   temperature: 0.7
   max_tokens: 2000
