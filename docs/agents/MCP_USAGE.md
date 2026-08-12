@@ -16,6 +16,7 @@ and how to run/inspect them independently for a demo.
 - [Running the MCP Servers](#running-the-mcp-servers)
   - [stdio reference servers (for MCP-native clients)](#stdio-reference-servers-for-mcp-native-clients)
   - [FastMCP server (Horizon / demo)](#fastmcp-server-horizon--demo)
+- [Browser-Based Tester (mcp_tester.html)](#browser-based-tester-mcp_testerhtml)
 - [Demonstrating MCP Live](#demonstrating-mcp-live)
 - [Key Technical Talking Points](#key-technical-talking-points)
 
@@ -108,6 +109,30 @@ python -m src.app
 `mcp.run()` starts the server; Horizon (or any FastMCP-compatible host)
 expects the module to export a variable named `app` or `mcp` — both are
 provided for compatibility.
+
+## Browser-Based Tester (mcp_tester.html)
+
+[mcp_tester.html](../../mcp_tester.html) is a static, single-file browser UI
+("Horizon MCP Tester") for exercising a deployed Horizon FastMCP endpoint
+without writing any client code — it supports Horizon OAuth login (or a
+pasted bearer token), listing tools, and calling them interactively.
+
+Because it's just a static HTML file, serve it with Python's built-in HTTP
+server from the repo root:
+
+```bash
+python3 -m http.server 8787
+```
+
+Then open it in a browser at:
+
+```
+http://127.0.0.1:8787/mcp_tester.html
+```
+
+On Windows/PowerShell (no `python3` alias), use `python -m http.server 8787`
+instead. Enter your Horizon bearer token (or use "Login with Horizon OAuth")
+and point it at your running FastMCP server's URL to list and invoke tools.
 
 ## Demonstrating MCP Live
 

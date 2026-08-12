@@ -28,6 +28,13 @@
   - [Availability](#availability)
   - [Scalability](#scalability-1)
   - [Security](#security)
+- [Concepts Implemented in the Current Codebase](#concepts-implemented-in-the-current-codebase)
+  - [Application Entrypoints](#application-entrypoints)
+  - [AI Agent Orchestration](#ai-agent-orchestration-1)
+  - [MCP Tool Servers](#mcp-tool-servers)
+  - [Service & Data Layer](#service--data-layer)
+  - [Configuration & Secrets](#configuration--secrets)
+  - [Testing](#testing)
 - [Technology Decisions](#technology-decisions)
   - [ADR-001: FastAPI vs Flask](#adr-001-fastapi-vs-flask)
   - [ADR-002: SQLite vs PostgreSQL](#adr-002-sqlite-vs-postgresql)
@@ -338,6 +345,39 @@ State = {
 - API key authentication
 - Input validation
 - HIPAA compliance patterns
+
+## Concepts Implemented in the Current Codebase
+
+A concrete snapshot of what is actually built and working today, mapped to files, as
+opposed to the aspirational design in [FUTURE_ARCHITECTURE.md](FUTURE_ARCHITECTURE.md).
+
+### Application Entrypoints
+- `src/app.py` / `src/mcp_server.py` - **FastMCP** tool server (`FastMCP("Referral-Management")`) exposing MCP tools; this is the active entrypoint.
+- `src/app.py.backup` - the original **FastAPI** REST implementation (`/api/v1/referrals`, `/api/v1/eligibility`, `/api/v1/conversation`, etc.). Kept for reference; not the active entrypoint. The "API Layer (FastAPI)" description in [Component Architecture](#1-api-layer-fastapi) reflects this backup file.
+
+### AI Agent Orchestration
+- `src/agents/referral_agent.py` - `ReferralAgent` and `ConversationalAgentOrchestrator`, built on **LangGraph** (`StateGraph`, `Graph`, `END`).
+- Model selection is fully **environment-driven**: `DEFAULT_MODEL_NAME = os.getenv("LLM_MODEL_NAME", "gpt-4")`. No proprietary/real model identifier is hardcoded anywhere in source or committed config - the actual model in use lives only in the gitignored `.env`.
+- Uses `langchain_core.messages` and `langchain_openai.ChatOpenAI` as the LLM client.
+
+### MCP Tool Servers
+- `src/mcp_servers/document_processor.py` - `extract_medical_codes`, `check_document_completeness`.
+- `src/mcp_servers/specialist_recommender.py` - `recommend_specialists`, `suggest_alternative_providers`.
+- `src/mcp_servers/conversational_assistant.py` - `handle_patient_query`, `summarize_patient_history`.
+
+### Service & Data Layer
+- `src/services/referral_service.py` - business logic for submission, status tracking, eligibility, specialist search, scheduling.
+- `src/database.py` - SQLAlchemy models (`ReferralDB`, `PatientDB`, `ProviderDB`, `DocumentDB`, `AppointmentDB`, `AuditLogDB`).
+- **Database connectivity with automatic fallback**: `DatabaseManager._create_engine()` reads `DB_TYPE` (default `mysql`), builds a `mysql+pymysql://` URL from `MYSQL_HOST/PORT/USER/PASSWORD/DATABASE` env vars (via `PyMySQL`, credentials URL-encoded with `quote_plus`), and test-connects with a 5s timeout. If MySQL is unreachable for any reason, it transparently falls back to a local SQLite file (`data/referrals.db`) instead of raising - the app never fails to start due to a missing database server.
+- No conversation/chat-history persistence table exists yet (LLM conversation state is in-memory only for the life of a process) - this is a known gap addressed conceptually in [FUTURE_ARCHITECTURE.md](FUTURE_ARCHITECTURE.md#7-persistent-session-management).
+
+### Configuration & Secrets
+- `src/config.py` - `ConfigManager` merges `config.yaml` (base, committed) → `config.local.yaml` (gitignored overrides) → environment variables, in that priority order.
+- Environment-variable overrides implemented today: `LLM_MODEL_NAME` → `ai.llm_model`, `DB_TYPE` → `database.type`, and `MYSQL_HOST` / `MYSQL_PORT` / `MYSQL_USER` / `MYSQL_DATABASE` → `database.mysql.*` (the MySQL password is deliberately excluded from the in-memory config dict and read directly from the environment only, so it never ends up in a config dump or log).
+- `.env` holds all secrets (API keys, MySQL password) and is gitignored; `requirements.txt` includes `PyMySQL==1.1.1` and `python-dotenv` to support this.
+
+### Testing
+- `tests/test_api.py`, `tests/test_referral_service.py` - unit/integration tests using `pytest`.
 
 ## Technology Decisions
 

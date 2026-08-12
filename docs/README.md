@@ -25,7 +25,7 @@ material.
 
 1. [project/requirements.md](project/requirements.md) — what was asked for
 2. [project/PROJECT_SUMMARY.md](project/PROJECT_SUMMARY.md) — what was delivered
-3. [architecture/ARCHITECTURE.md](architecture/ARCHITECTURE.md) — how it's built
+3. [architecture/ARCHITECTURE.md](architecture/ARCHITECTURE.md) — how it's built, [architecture/FUTURE_ARCHITECTURE.md](architecture/FUTURE_ARCHITECTURE.md) — where it's headed
 4. [agents/AGENTS.md](agents/AGENTS.md), [agents/MCP_USAGE.md](agents/MCP_USAGE.md), [agents/LANGGRAPH_ORCHESTRATION.md](agents/LANGGRAPH_ORCHESTRATION.md) — the AI internals
 5. [api/API_EXAMPLES.md](api/API_EXAMPLES.md) — how to call it
 6. [deployment/QUICKSTART.md](deployment/QUICKSTART.md), [deployment/DEPLOYMENT.md](deployment/DEPLOYMENT.md) — how to run it
