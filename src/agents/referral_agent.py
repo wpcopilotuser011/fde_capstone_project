@@ -3,7 +3,7 @@ AI Agent Orchestration using LangGraph
 Coordinates multiple AI agents to handle referral workflow
 """
 from typing import TypedDict, Annotated, Sequence, List, Dict, Any
-from langraph.graph import Graph, StateGraph, END
+from langgraph.graph import Graph, StateGraph, END
 from langchain_core.messages import BaseMessage, HumanMessage, AIMessage
 from langchain_openai import ChatOpenAI
 import json
